@@ -53,23 +53,31 @@ class PhoneMask {
     }
 
     format() {
-        // Prefiksni tekshirish va faqat raqamlarni ajratish
+        // Prefiksni saqlash va faqat raqamlarni ajratish
         let val = this.el.value.startsWith(this.prefix) ? this.el.value : this.prefix;
         let digits = val.substring(this.prefix.length).replace(/\D/g, '').substring(0, 9);
 
         this.el.value = this.prefix + digits;
         const len = this.el.value.length;
 
-        // 3. Brauzer darajasidagi validatsiya (Required/Non-required)
-        if (this.isRequired) {
-            // Majburiy bo'lsa: 14 ta belgi shart
+        // --- VIZUAL VALIDATSIYA QISMI ---
+        if (len === 14) {
+            // Raqam to'liq kiritildi
+            this.el.classList.remove('is-invalid');
+            this.el.classList.add('is-valid');
+            this.el.setCustomValidity("");
+        } else if (len > 5) {
+            // Raqam kiritilmoqda lekin hali to'liq emas
+            this.el.classList.remove('is-valid');
             this.el.setCustomValidity(len < 14 ? "Telefon raqamini to'liq kiriting." : "");
+            // this.el.classList.add('is-invalid');
+            // this.el.setCustomValidity(this.isRequired ? "Telefon raqamini to'liq kiriting." : "Raqamni oxirigacha kiriting yoki bo'sh qoldiring.");
         } else {
-            // Ixtiyoriy bo'lsa: Yo faqat "+998 ", yo to'liq 14 ta belgi
-            this.el.setCustomValidity((len > 5 && len < 14) ? "Raqamni oxirigacha kiriting yoki bo'sh qoldiring." : "");
+            // Input bo'sh (faqat prefiks bor)
+            this.el.classList.remove('is-invalid', 'is-valid');
+            this.el.setCustomValidity(this.isRequired ? "Telefon raqamini kiriting." : "");
         }
     }
-
     ensureCursor() {
         if (this.el.selectionStart < 5) {
             this.el.setSelectionRange(5, 5);
